@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.http import HttpResponse
+from .models import *
 
 
 # Create your views here.
@@ -12,6 +13,9 @@ def index(request):
     return render(request, 'core/index.html')
 
 def registration_view(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+    
     if request.method == "POST":
         #GETTING FORM DATA MANUALLY
         full_name = request.POST.get('fullname')
@@ -49,6 +53,9 @@ def registration_view(request):
 
 from django.contrib.auth.hashers import check_password
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+    
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -82,13 +89,65 @@ def logout_view(request):
     return redirect('login')
 
 def products(request):
-    return render(request, 'core/products.html')
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    category_slug = request.GET.get('category') # Get category from URL params
+    subcategory_slug = request.GET.get('subcategory') # Get subcategory from URL params
+
+    # Fetch products based on category and subcategory
+    products = Product.objects.all() # Default, show all products
+
+    if category_slug:
+        category = Category.objects.get(slug=category_slug)
+        products = products.filter(category=category)
+
+    if subcategory_slug:
+        subcategory = SubCategory.objects.get(slug=subcategory_slug)
+        products = products.filter(subcategory=subcategory)
+    
+    # Fetch all categories and subcategories for the sidebar or dropdown
+    categories = Category.objects.all()
+    subcategories = SubCategory.objects.all()
+
+
+    context = {
+        'products': products,
+        'categories': categories,
+        'subcategories': subcategories
+    }
+
+    return render(request, 'core/products.html', context)
 
 
 def myAccount(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     return render(request, 'core/myAccount.html')
 
 
 def wishlist(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     return render(request, 'core/wishlist.html')
 
+
+def cart(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    return render(request, 'core/cart.html')
+
+def checkout(request):
+    if not request.user.is_authenticated:
+        return redirect('login') 
+    
+    return render(request, 'core/checkout.html')
+
+def confirmation(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    return render(request, 'core/confirmation.html')    
