@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap');
@@ -117,7 +118,7 @@
 </section>
 
 <!-- Main Content -->
-<div class="max-w-7xl mx-auto px-6 py-16">
+<div class="max-w-7xl mx-auto py-16">
     <!-- Category Navigation -->
     <div class="mb-12">
         <div class="flex flex-wrap justify-center gap-4">
@@ -256,9 +257,9 @@
                         <div class="absolute top-4 left-4">
                             <span class="badge-new text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                         </div>
-                        <button class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent text-white py-3 text-center opacity-0 group-hover:opacity-100 transition duration-300 translate-y-2 group-hover:translate-y-0">
-                            <span class="font-medium">Quick View</span>
-                        </button>
+                        <a href="{% url 'product_details' product.id %}" class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent text-white py-3 text-center opacity-0 group-hover:opacity-100 transition duration-300 translate-y-2 group-hover:translate-y-0">
+                            <span class="font-medium">View Details</span>
+                        </a>
                     </div>
                     <div class="p-5">
                         <div class="flex justify-between items-start mb-2">

@@ -88,6 +88,7 @@ def logout_view(request):
     messages.success(request, "Come back soon for more amazing deals and updates!")
     return redirect('login')
 
+
 def products(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -118,6 +119,28 @@ def products(request):
     }
 
     return render(request, 'core/products.html', context)
+
+
+def product_details(request, id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    try:
+        product = Product.objects.get(id=id)
+        product_price = ProductPrice.objects.get(product=product)
+    except Product.DoesNotExist:
+        messages.error(request, "Product not found")
+        return redirect('products')
+    except ProductPrice.DoesNotExist:
+        messages.error(request, "Product price not found")
+        return redirect('products')
+    
+    context = {
+        'products': product,
+        'product_price': product_price,
+        'gallery_images': product.images.all(),  # Assuming you have a related name 'images' in ProductImage model
+    }
+    return render(request, 'core/product_details.html', context)
 
 
 def myAccount(request):
