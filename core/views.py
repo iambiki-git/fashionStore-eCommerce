@@ -140,16 +140,21 @@ def products(request, category):
 
 
 
-
+from datetime import date, timedelta
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)  # Get product by slug
     product_price = product.price  # Assuming you have a related name 'price' in ProductPrice model
     product_images = product.images.all()  # Assuming you have a related name 'images' in ProductImage model
 
+    today = date.today()
+    estimated_delivery = today + timedelta(days=3)  # You can change 3 to any number of days
+
     context = {
         'product': product,
         'product_price': product_price,
         'product_images': product_images,
+        'estimated_delivery': estimated_delivery.strftime('%a, %b %d'),
+
     }
     return render(request, 'core/product_detail.html', context)
 

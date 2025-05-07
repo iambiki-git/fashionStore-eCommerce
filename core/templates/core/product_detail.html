@@ -84,22 +84,70 @@
                     <div class="mb-6">
                         <div class="flex items-center">
                             <span class="text-3xl font-bold">${{ product_price.new_price }}</span>
-                            <span class="ml-3 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">In Stock</span>
+                            {% if product_price.old_price %}
+                            <span class="line-through text-gray-500 ml-2">${{ product_price.old_price }}</span>
+                            {% endif %}
+                            {% if product.stock > 0 %}
+                            <span class="ml-3 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">In Stock ({{ product.stock }} pieces)</span>
+                            {% else %}
+                            <span class="ml-3 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 border border-red-100">
+                                Out of Stock
+                            </span>
+                            {% endif %}
+
                         </div>
-                        <p class="mt-2 text-gray-600">or 4 interest-free payments of $45.00 with <span class="font-semibold">Klarna</span></p>
+                        <p class="mt-2 text-xs tracking-wide text-gray-500">
+                            OR <span class="font-medium underline decoration-1">4 interest-free payments</span> OF $45.00 WITH 
+                            <span class="font-semibold text-[#ff5b7d]">KLARNA</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="inline w-3 h-3 ml-0.5 -mb-0.5" viewBox="0 0 24 24" fill="#ff5b7d">
+                                <path d="M14 3h7v7h-2V5h-5V3zm3 12h5v5h-5v2h-7v-7h2v5h5v-5zM5 15v5h5v2H3v-7h2zm0-12v5h5v2H3V3h2z"/>
+                            </svg>
+                        </p>                    
                     </div>
 
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold mb-3">Color</h3>
-                        <div class="flex space-x-3">
-                            <button class="w-10 h-10 rounded-full bg-black border-2 border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none"></button>
-                            <button class="w-10 h-10 rounded-full bg-white border-2 border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none"></button>
-                            <button class="w-10 h-10 rounded-full bg-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none"></button>
-                            <button class="w-10 h-10 rounded-full bg-rose-500 border-2 border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none"></button>
+                    {% comment %} sizes {% endcomment %}
+                    <style>
+                        select {
+                            letter-spacing: 0.05em;
+                          }
+                    </style>
+                    <div class="mb-12">
+                        <div class="flex justify-between items-center mb-2">
+                          <label class="text-lg tracking-wider text-black font-bold">Size</label>
+                          <button class="text-xs text-gray-400 hover:text-black transition-colors">Size Guide →</button>
                         </div>
-                    </div>
+                        
+                        <div class="relative group">
+                          <select class="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-sm appearance-none focus:outline-none focus:border-black transition-all duration-300 hover:border-gray-500">
+                            <option disabled selected class="text-gray-400">Choose your size</option>
+                            <option class="text-black">&nbsp;&nbsp;XS</option>
+                            <option class="text-black">&nbsp;&nbsp;S</option>
+                            <option class="text-black">&nbsp;&nbsp;M</option>
+                            <option class="text-black">&nbsp;&nbsp;L</option>
+                            <option disabled class="text-gray-400">&nbsp;&nbsp;XXL (Out of stock)</option>
+                          </select>
+                          
+                          <div class="absolute right-0 bottom-3 transform transition-transform duration-300 group-hover:translate-y-1">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                              <path d="M7 10l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          </div>
+                        </div>
+                        
+                        <div class="flex items-center mt-2">
+                            <p class="text-xs text-gray-500 mt-2">
+                              <span class="font-medium">Get it by:</span>
+                              <span class="text-green-600">{{ estimated_delivery }}</span>
+                              <span class="text-gray-400">(if ordered today)</span>
+                            </p>
+                        </div>
+                          
+                          
+                        
+                      </div>
 
-                    <div class="mb-8">
+                    {% comment %} features {% endcomment %}
+                    {% comment %} <div class="mb-8">
                         <h3 class="text-lg font-semibold mb-3">Features</h3>
                         <ul class="space-y-2 text-gray-600">
                             <li class="flex items-center">
@@ -133,45 +181,66 @@
                                 Bluetooth 5.2 with multipoint connection
                             </li>
                         </ul>
-                    </div>
+                    </div> {% endcomment %}
 
                     <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                        <div class="flex items-center border rounded-lg overflow-hidden">
-                            <button class="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition">-</button>
-                            <span class="px-4 py-2 bg-white w-12 text-center">1</span>
-                            <button class="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition">+</button>
+                        <div class="flex items-center border rounded-lg overflow-hidden w-fit" id="quantity-selector">
+                            <button id="decrease-btn" class="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition">-</button>
+                            <span id="quantity" class="px-4 py-2 bg-white w-12 text-center">1</span>
+                            <button id="increase-btn" class="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition">+</button>
                         </div>
-                        <button class="flex-1 bg-gradient-to-r from-primary to-secondary text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition shadow-md">
-                            Add to Cart
+                        
+                        {% if product.stock > 0 %}
+                        <button class="w-2/3 py-4 px-6 bg-primary text-white text-sm tracking-wider font-light uppercase rounded-sm transition-colors duration-300 border border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                            ADD TO CART
                         </button>
+                        {% else %}
+                        <button 
+                        class="bg-white text-red-600 py-2 px-4 rounded-lg font-medium border-2 border-red-200 cursor-not-allowed hover:bg-red-50 transition"
+                        disabled
+                        >
+                        <span class="flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            Out of Stock
+                        </span>
+                        </button>
+                        {% endif %}
                     </div>
 
                     <div class="border-t pt-6">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-gray-600">Free shipping</span>
+                            {% if product_price.new_price >= 1500 %}
+                            <p class="text-sm text-green-600 mt-2">Free Shipping</p>
+                            {% else %}
+                            <p class="text-sm text-gray-500 mt-2">Shipping Rs. 100 on orders below Rs. 1500</p>
+                            {% endif %}
+
                             <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-gray-600">30-day returns</span>
+                            <span class="text-green-600 text-sm">7-Day Free Return </span>
                             <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-gray-600">2-year warranty</span>
+                            <span class="text-green-600 text-sm">Easy Size Exchange</span>
                             <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
 
         <!-- Product Tabs -->
-        <div class="mt-16 bg-white rounded-xl shadow-sm overflow-hidden">
+        {% comment %} <div class="mt-16 bg-white rounded-xl shadow-sm overflow-hidden">
             <div class="border-b border-gray-200">
                 <nav class="flex -mb-px">
                     <button class="py-4 px-6 text-center border-b-2 font-medium text-sm border-primary text-primary">
@@ -208,7 +277,93 @@
                     </div>
                 </div>
             </div>
+        </div> {% endcomment %}
+        <div class="mt-16 bg-white rounded-xl shadow-sm overflow-hidden">
+            <!-- Tabs -->
+            <div class="border-b border-gray-200">
+                <nav class="flex -mb-px" id="tabs">
+                    <button data-tab="description" class="tab-btn py-4 px-6 text-center border-b-2 font-medium text-sm border-primary text-primary">
+                        Description
+                    </button>
+                    <button data-tab="specs" class="tab-btn py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Specifications
+                    </button>
+                    <button data-tab="reviews" class="tab-btn py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Reviews (1,245)
+                    </button>
+                    <button data-tab="faq" class="tab-btn py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        FAQ
+                    </button>
+                </nav>
+            </div>
+        
+            <!-- Tab Contents -->
+            <div class="p-8">
+                <!-- Description Tab -->
+                <div id="description" class="tab-content">
+                    <h3 class="text-xl font-semibold mb-4">Stylish & Comfortable Fashion</h3>
+                    <p class="text-gray-600 mb-6">
+                        Our latest collection is designed to offer both style and comfort. With premium fabrics and trendy cuts, each piece is crafted to keep you looking chic and feeling confident.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-medium mb-2">Perfect Fit</h4>
+                            <p class="text-gray-600">
+                                Made with stretchy fabrics that hug your body in all the right places. Designed for a flattering and comfortable fit, no matter your shape.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="font-medium mb-2">Versatile Designs</h4>
+                            <p class="text-gray-600">
+                                Whether you're going to a casual hangout or a formal event, our collection offers pieces that can be dressed up or down to match your style.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Specifications Tab -->
+                <div id="specs" class="tab-content hidden">
+                    <h3 class="text-xl font-semibold mb-4">Product Specifications</h3>
+                    <ul class="list-disc pl-6 text-gray-600">
+                        <li>Material: 100% Organic Cotton</li>
+                        <li>Care Instructions: Machine Wash Cold, Tumble Dry Low</li>
+                        <li>Sizes: XS, S, M, L, XL</li>
+                        <li>Colors Available: Black, White, Navy, Burgundy</li>
+                    </ul>
+                </div>
+        
+                <!-- Reviews Tab -->
+                <div id="reviews" class="tab-content hidden">
+                    <h3 class="text-xl font-semibold mb-4">Customer Reviews</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <span class="text-yellow-400">★★★★☆</span>
+                            <p class="text-gray-600 ml-2">"Great fit and quality! Highly recommend."</p>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-yellow-400">★★★★★</span>
+                            <p class="text-gray-600 ml-2">"Perfect for any occasion! Very comfortable."</p>
+                        </div>
+                        <!-- More reviews here -->
+                    </div>
+                </div>
+        
+                <!-- FAQ Tab -->
+                <div id="faq" class="tab-content hidden">
+                    <h3 class="text-xl font-semibold mb-4">Frequently Asked Questions</h3>
+                    <div class="space-y-4">
+                        <div class="font-medium">Q: What sizes are available?</div>
+                        <p class="text-gray-600">A: Our collection is available in XS, S, M, L, and XL sizes.</p>
+        
+                        <div class="font-medium">Q: How should I care for my garment?</div>
+                        <p class="text-gray-600">A: Machine wash cold and tumble dry on low to maintain the fabric's quality.</p>
+        
+                        <!-- More FAQs here -->
+                    </div>
+                </div>
+            </div>
         </div>
+        
 
         <!-- Related Products -->
         <div class="mt-16">
@@ -275,11 +430,13 @@
 
 <script>
 
+    // Change Main Image on Thumbnail Click
     function changeMainImage(thumbnail) {
         const mainImage = document.getElementById('main-product-image');
         mainImage.src = thumbnail.src;
     }
-
+    
+    // Image Zoom Functionality
     const mainImage = document.getElementById('main-product-image');
 
     function changeMainImage(thumbnail) {
@@ -300,6 +457,66 @@
         mainImage.style.transformOrigin = 'center center';
     }
 
+
+
+    // Quantity Selector
+    const quantitySpan = document.getElementById("quantity");
+    const increaseBtn = document.getElementById("increase-btn");
+    const decreaseBtn = document.getElementById("decrease-btn");
+    const stockMsg = document.getElementById("stock-msg");
+
+    let quantity = 1;
+    const maxStock = {{ product.stock|default:1 }};
+
+    increaseBtn.addEventListener("click", () => {
+        if (quantity < maxStock) {
+            quantity++;
+            quantitySpan.textContent = quantity;
+            stockMsg.textContent = "";
+        } else {
+            stockMsg.textContent = "Maximum stock reached.";
+        }
+    });
+
+    decreaseBtn.addEventListener("click", () => {
+        if (quantity > 1) {
+            quantity--;
+            quantitySpan.textContent = quantity;
+            stockMsg.textContent = "";
+        } else {
+            stockMsg.textContent = "Minimum quantity is 1.";
+        }
+    });
+
+
+    //JavaScript to toggle tabs
+     // Select all tab buttons and tab contents
+     const tabBtns = document.querySelectorAll('.tab-btn');
+     const tabContents = document.querySelectorAll('.tab-content');
+ 
+     // Loop through all buttons
+     tabBtns.forEach(btn => {
+         btn.addEventListener('click', () => {
+             // Hide all tab contents
+             tabContents.forEach(content => {
+                 content.classList.add('hidden');
+             });
+ 
+             // Remove active state from all buttons
+             tabBtns.forEach(button => {
+                 button.classList.remove('border-primary', 'text-primary');
+                 button.classList.add('border-transparent', 'text-gray-500');
+             });
+ 
+             // Show the selected tab content
+             const selectedTab = document.getElementById(btn.getAttribute('data-tab'));
+             selectedTab.classList.remove('hidden');
+ 
+             // Add active state to the clicked button
+             btn.classList.remove('border-transparent', 'text-gray-500');
+             btn.classList.add('border-primary', 'text-primary');
+         });
+     });
 </script>
                                     
 {% endblock %}

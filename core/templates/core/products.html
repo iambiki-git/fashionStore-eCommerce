@@ -295,7 +295,11 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-gray-900 text-xl">${{ product.price.new_price }}</span>
+                            {% if product.stock > 0 %}
                             <span class="text-gray-400 text-sm">In Stock</span>
+                            {% else %}
+                            <span class="text-red-400 text-sm">Out of Stock</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
