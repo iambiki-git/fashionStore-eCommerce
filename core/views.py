@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.http import HttpResponse
 from .models import *
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -89,31 +90,47 @@ def logout_view(request):
     return redirect('login')
 
 
-def products(request):
+
+def products(request, category):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    category_slug = request.GET.get('category') # Get category from URL params
-    subcategory_slug = request.GET.get('subcategory') # Get subcategory from URL params
+    # category_slug = request.GET.get('category') # Get category from URL params
+    # subcategory_slug = request.GET.get('subcategory') # Get subcategory from URL params
 
     # Fetch products based on category and subcategory
     products = Product.objects.all() # Default, show all products
 
-    if category_slug:
-        category = Category.objects.get(slug=category_slug)
-        products = products.filter(category=category)
+    if category:
+        try:
+            category = Category.objects.get(slug=category)
+            products = products.filter(category=category)
+        except Category.DoesNotExist:
+            messages.error(request, "Category not found")
+            return redirect('products')
 
-    if subcategory_slug:
-        subcategory = SubCategory.objects.get(slug=subcategory_slug)
-        products = products.filter(subcategory=subcategory)
+    # if category_slug:
+    #     category = Category.objects.get(slug=category_slug)
+    #     products = products.filter(category=category)
+
+    # if subcategory_slug:
+    #     subcategory = SubCategory.objects.get(slug=subcategory_slug)
+    #     products = products.filter(subcategory=subcategory)
     
     # Fetch all categories and subcategories for the sidebar or dropdown
     categories = Category.objects.all()
     subcategories = SubCategory.objects.all()
 
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+
 
     context = {
-        'products': products,
+        # 'products': products,
+        'page_obj': page_obj,
         'categories': categories,
         'subcategories': subcategories
     }
@@ -121,26 +138,22 @@ def products(request):
     return render(request, 'core/products.html', context)
 
 
-def product_details(request, id):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    
-    try:
-        product = Product.objects.get(id=id)
-        product_price = ProductPrice.objects.get(product=product)
-    except Product.DoesNotExist:
-        messages.error(request, "Product not found")
-        return redirect('products')
-    except ProductPrice.DoesNotExist:
-        messages.error(request, "Product price not found")
-        return redirect('products')
-    
+
+
+
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug)  # Get product by slug
+    product_price = product.price  # Assuming you have a related name 'price' in ProductPrice model
+    product_images = product.images.all()  # Assuming you have a related name 'images' in ProductImage model
+
     context = {
-        'products': product,
+        'product': product,
         'product_price': product_price,
-        'gallery_images': product.images.all(),  # Assuming you have a related name 'images' in ProductImage model
+        'product_images': product_images,
     }
-    return render(request, 'core/product_details.html', context)
+    return render(request, 'core/product_detail.html', context)
+
+
 
 
 def myAccount(request):

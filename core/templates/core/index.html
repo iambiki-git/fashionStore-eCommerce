@@ -148,21 +148,21 @@
     <section class="py-16 px-6 max-w-7xl mx-auto">
         <h2 class="text-3xl font-bold text-center mb-12 text-dark">Shop by Category</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <a href="{% url 'products'  %}" class="category-card relative rounded-xl overflow-hidden h-64">
+            <a href="{% url 'products' 'men' %}" class="category-card relative rounded-xl overflow-hidden h-64">
                 <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=736&q=80" 
                      alt="Men's Fashion" class="w-full h-full object-cover">
                 <div class="category-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition duration-300">
                     <h3 class="text-white text-2xl font-bold">Men</h3>
                 </div>
             </a>
-            <a href="{% url 'products' %}" class="category-card relative rounded-xl overflow-hidden h-64">
+            <a href="{% url 'products' 'women' %}" class="category-card relative rounded-xl overflow-hidden h-64">
                 <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" 
                      alt="Women's Fashion" class="w-full h-full object-cover">
                 <div class="category-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition duration-300">
                     <h3 class="text-white text-2xl font-bold">Women</h3>
                 </div>
             </a>
-            <a href="#" class="category-card relative rounded-xl overflow-hidden h-64">
+            <a href="{% url 'products' 'kids' %}" class="category-card relative rounded-xl overflow-hidden h-64">
                 <img src="https://images.unsplash.com/photo-1604917018615-8c6e250a059e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" 
                      alt="Kids Fashion" class="w-full h-full object-cover">
                 <div class="category-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition duration-300">
