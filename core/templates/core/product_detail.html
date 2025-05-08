@@ -113,76 +113,70 @@
                     </style>
                     <div class="mb-12">
                         <div class="flex justify-between items-center mb-2">
-                          <label class="text-lg tracking-wider text-black font-bold">Size</label>
-                          <button class="text-xs text-gray-400 hover:text-black transition-colors">Size Guide →</button>
+                            <label class="text-lg tracking-wider text-black font-bold">Size</label>
+                            <button class="text-xs text-gray-400 hover:text-black transition-colors">Size Guide →</button>
                         </div>
                         
                         <div class="relative group">
-                          <select class="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-sm appearance-none focus:outline-none focus:border-black transition-all duration-300 hover:border-gray-500">
-                            <option disabled selected class="text-gray-400">Choose your size</option>
-                            <option class="text-black">&nbsp;&nbsp;XS</option>
-                            <option class="text-black">&nbsp;&nbsp;S</option>
-                            <option class="text-black">&nbsp;&nbsp;M</option>
-                            <option class="text-black">&nbsp;&nbsp;L</option>
-                            <option disabled class="text-gray-400">&nbsp;&nbsp;XXL (Out of stock)</option>
-                          </select>
-                          
-                          <div class="absolute right-0 bottom-3 transform transition-transform duration-300 group-hover:translate-y-1">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                              <path d="M7 10l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                          </div>
+                            <select id="size-select" name="size" class="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-sm appearance-none focus:outline-none focus:border-black transition-all duration-300 hover:border-gray-500">
+                            
+                                
+                                {% comment %} <option disabled class="text-gray-400">&nbsp;&nbsp;XXL (Out of stock)</option> {% endcomment %}
+                            
+                            
+                                {% if preselected_size %}
+                                    <option value="{{ preselected_size }}" selected class="text-black">
+                                        &nbsp;&nbsp;{{ preselected_size }}
+                                    </option>
+                                {% else %}
+                                {% for size in product.available_sizes %}
+                                <option value="{{ size }}" class="text-black" {% if preselected_size == size %}selected{% endif %}>
+                                    &nbsp;&nbsp;{{ size }}
+                                </option>
+                                {% endfor %}
+                                
+                                {% if 'XXL' not in product.available_sizes %}
+                                    <option disabled class="text-gray-400">&nbsp;&nbsp;XXL (Out of stock)</option>
+                                {% endif %}
+
+                                {% endif %}
+                            </select>
+
+                        
+                            <div class="absolute right-0 bottom-3 transform transition-transform duration-300 group-hover:translate-y-1">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M7 10l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
                         </div>
+                        
                         
                         <div class="flex items-center mt-2">
                             <p class="text-xs text-gray-500 mt-2">
-                              <span class="font-medium">Get it by:</span>
-                              <span class="text-green-600">{{ estimated_delivery }}</span>
-                              <span class="text-gray-400">(if ordered today)</span>
+                                <span class="font-medium">Get it by:</span>
+                                <span class="text-green-600">{{ estimated_delivery }}</span>
+                                <span class="text-gray-400">(if ordered today)</span>
                             </p>
                         </div>
-                          
-                          
-                        
-                      </div>
 
-                    {% comment %} features {% endcomment %}
-                    {% comment %} <div class="mb-8">
-                        <h3 class="text-lg font-semibold mb-3">Features</h3>
-                        <ul class="space-y-2 text-gray-600">
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Active Noise Cancellation
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                30-hour battery life with case
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                IPX7 Water Resistance
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Wireless charging compatible
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Bluetooth 5.2 with multipoint connection
-                            </li>
-                        </ul>
-                    </div> {% endcomment %}
 
+                        {% comment %} <label class="block mb-2 text-sm mt-6 text-gray-500">Available Colors:</label>
+                        <div class="flex gap-3">
+                            {% for color in product.available_colors %}
+                                <label class="relative w-7 h-7 rounded-full border-2 cursor-pointer ring-2 ring-transparent hover:ring-black transition"
+                                    style="background-color: {{ color|lower }};">
+                                    <input type="radio" name="color" value="{{ color }}"
+                                        class="sr-only"
+                                        {% if preselected_color == color %}checked{% endif %}>
+                                    {% if preselected_color == color %}
+                                        <span class="absolute inset-0 rounded-full border-2 border-black"></span>
+                                    {% endif %}
+                                </label>
+                            {% endfor %}
+                        </div> {% endcomment %}
+
+                    </div>
+                    
                     <div class="flex flex-col sm:flex-row gap-4 mb-8">
                         <div class="flex items-center border rounded-lg overflow-hidden w-fit" id="quantity-selector">
                             <button id="decrease-btn" class="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition">-</button>
@@ -191,23 +185,34 @@
                         </div>
                         
                         {% if product.stock > 0 %}
-                        <button class="w-2/3 py-4 px-6 bg-primary text-white text-sm tracking-wider font-light uppercase rounded-sm transition-colors duration-300 border border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                        {% if not preselected_size %}
+                        <!-- Add an ID to the button and include product ID as a data attribute -->
+                        <button id="add-to-cart-btn" 
+                                class="w-2/3 py-4 px-6 bg-primary text-white text-sm tracking-wider font-light uppercase rounded-sm transition-colors duration-300 border border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                data-product-id="{{ product.id }}">
                             ADD TO CART
                         </button>
                         {% else %}
-                        <button 
-                        class="bg-white text-red-600 py-2 px-4 rounded-lg font-medium border-2 border-red-200 cursor-not-allowed hover:bg-red-50 transition"
-                        disabled
-                        >
-                        <span class="flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                            Out of Stock
-                        </span>
+                        <button id="add-to-cart-btn" 
+                                class="w-2/3 py-4 px-6 bg-primary text-white text-sm tracking-wider font-light uppercase rounded-sm transition-colors duration-300 border border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                data-product-id="{{ product.id }}">
+                            Update 
+                        </button>
+                        {% endif %}
+                        {% else %}
+                        <button class="bg-white text-red-600 py-2 px-4 rounded-lg font-medium border-2 border-red-200 cursor-not-allowed hover:bg-red-50 transition" disabled>
+                            <span class="flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                Out of Stock
+                            </span>
                         </button>
                         {% endif %}
                     </div>
+
+
+
 
                     <div class="border-t pt-6">
                         <div class="flex items-center justify-between mb-2">
@@ -239,45 +244,7 @@
             </div>
         </div>
 
-        <!-- Product Tabs -->
-        {% comment %} <div class="mt-16 bg-white rounded-xl shadow-sm overflow-hidden">
-            <div class="border-b border-gray-200">
-                <nav class="flex -mb-px">
-                    <button class="py-4 px-6 text-center border-b-2 font-medium text-sm border-primary text-primary">
-                        Description
-                    </button>
-                    <button class="py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                        Specifications
-                    </button>
-                    <button class="py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                        Reviews (1,245)
-                    </button>
-                    <button class="py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                        FAQ
-                    </button>
-                </nav>
-            </div>
-            <div class="p-8">
-                <h3 class="text-xl font-semibold mb-4">Premium Sound Experience</h3>
-                <p class="text-gray-600 mb-6">
-                    The NovaTech Pro Wireless Earbuds deliver exceptional sound quality with custom-tuned drivers that produce rich, detailed audio across the entire frequency range. Experience your music the way artists intended with deep bass, clear mids, and crisp highs.
-                </p>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div>
-                        <h4 class="font-medium mb-2">Advanced Noise Cancellation</h4>
-                        <p class="text-gray-600">
-                            Our hybrid active noise cancellation technology uses both feedforward and feedback microphones to analyze and counter external noise, allowing you to focus on what's important - your music, calls, or simply peace and quiet.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-medium mb-2">All-Day Comfort</h4>
-                        <p class="text-gray-600">
-                            Designed for extended wear, the ergonomic shape and lightweight construction (just 5.4g per earbud) ensure a secure and comfortable fit. Three sizes of silicone ear tips are included to find your perfect match.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div> {% endcomment %}
+       
         <div class="mt-16 bg-white rounded-xl shadow-sm overflow-hidden">
             <!-- Tabs -->
             <div class="border-b border-gray-200">
@@ -424,6 +391,9 @@
             </div>
         </div>
     </main>
+     <!-- Toast Notification for Favorites -->
+     <div id="toast" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-md opacity-0 transition-opacity duration-300"></div>
+            
 
 </div>     
 
@@ -456,38 +426,7 @@
         mainImage.style.transform = 'scale(1)';
         mainImage.style.transformOrigin = 'center center';
     }
-
-
-
-    // Quantity Selector
-    const quantitySpan = document.getElementById("quantity");
-    const increaseBtn = document.getElementById("increase-btn");
-    const decreaseBtn = document.getElementById("decrease-btn");
-    const stockMsg = document.getElementById("stock-msg");
-
-    let quantity = 1;
-    const maxStock = {{ product.stock|default:1 }};
-
-    increaseBtn.addEventListener("click", () => {
-        if (quantity < maxStock) {
-            quantity++;
-            quantitySpan.textContent = quantity;
-            stockMsg.textContent = "";
-        } else {
-            stockMsg.textContent = "Maximum stock reached.";
-        }
-    });
-
-    decreaseBtn.addEventListener("click", () => {
-        if (quantity > 1) {
-            quantity--;
-            quantitySpan.textContent = quantity;
-            stockMsg.textContent = "";
-        } else {
-            stockMsg.textContent = "Minimum quantity is 1.";
-        }
-    });
-
+ 
 
     //JavaScript to toggle tabs
      // Select all tab buttons and tab contents
@@ -517,6 +456,98 @@
              btn.classList.add('border-primary', 'text-primary');
          });
      });
+
+
+
+     document.addEventListener('DOMContentLoaded', function() {
+        // Quantity selector functionality
+        const quantityElement = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decrease-btn');
+        const increaseBtn = document.getElementById('increase-btn');
+        const sizeSelect = document.getElementById('size-select');
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        
+        let quantity = parseInt(quantityElement.textContent) || 1;
+        const maxStock = parseInt("{{ product.stock|default:1 }}"); 
+        
+        decreaseBtn.addEventListener('click', function() {
+            if (quantity > 1) {
+                quantity--;
+                quantityElement.textContent = quantity;
+            }
+            else {
+                showToast("Minimum quantity is 1.");
+            }
+        });
+        
+        increaseBtn.addEventListener('click', function() {
+            if (quantity < maxStock){
+                quantity++;
+                quantityElement.textContent = quantity;
+            }
+            else {
+                showToast("Maximum stock reached.");
+            }
+        });
+        
+        // Add to cart functionality
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function() {
+                const selectedSize = sizeSelect.value;
+                const productId = this.getAttribute('data-product-id');
+                
+                // Validate size selection
+                if (!selectedSize || sizeSelect.options[sizeSelect.selectedIndex].disabled) {
+                    showToast('Please select a valid size');
+                    return;
+                }
+                
+                // Prepare data to send to server
+                const cartData = {
+                    product_id: productId,
+                    size: selectedSize,
+                    quantity: quantity
+                };
+                
+                // Send data to server (using Fetch API)
+                fetch('{% url "add_to_cart_ajax" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}' // For Django, adjust for your framework
+                    },
+                    body: JSON.stringify(cartData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update cart count or show success message
+                        showToast(data.message);   
+                        // Optionally update cart count in navbar
+                        if (data.cart_count) {
+                            document.getElementById('cart-count').textContent = data.cart_count;
+                        }
+                    } else {
+                        showToast(data.message || 'Error adding item to cart');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('An error occurred while adding to cart');
+                });
+            });
+        }
+    });
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.remove('opacity-0');
+        
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+        }, 1000);
+    }
 </script>
                                     
 {% endblock %}

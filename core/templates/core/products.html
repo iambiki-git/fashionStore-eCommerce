@@ -430,49 +430,57 @@
                 setTimeout(() => icon.classList.remove('animate-ping'), 1000);
             }
         });
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.remove('opacity-0');
-            
-            setTimeout(() => {
-                toast.classList.add('opacity-0');
-            }, 1000);
-        }
     });
 
     
 
-        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-            button.addEventListener('click', async function () {
-                const productId = this.dataset.productId;
-                
-                try {
-                    const response = await fetch(`/cart/add/ajax/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}',
-                        },
-                        body: JSON.stringify({ product_id: productId }),
-                    });
-        
-                    const data = await response.json();
-        
-                    if (response.ok) {
-                        alert(data.message); // Replace with toast/snackbar if needed
-                        // Optionally update cart count in navbar here
-                    } else {
-                        alert(data.error);
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', async function() {
+            const productId = this.dataset.productId;
+            
+            try {
+                const response = await fetch('{% url "add_to_cart_ajax" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: JSON.stringify({ 
+                        product_id: productId,
+                        // Omitted size and quantity will use defaults from view
+                    }),
+                });
+    
+                const data = await response.json();
+    
+                if (data.success) {
+                    // Update cart count in navbar
+                    const cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.cart_count;
                     }
-                } catch (err) {
-                    alert("Failed to add to cart.");
+                    showToast(data.message);
+                } else {
+                    showToast(data.message);
                 }
-            });
+            } catch (error) {
+                console.error('Error:', error);
+                showToast("Failed to add to cart. Please try again.");
+            }
+
+            
         });
+    }); 
+    
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.remove('opacity-0');
         
-        
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+        }, 3000);
+    }
 
     
 </script>
