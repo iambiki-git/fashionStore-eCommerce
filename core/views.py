@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from django.http import HttpResponse
+from django.http import JsonResponse
 from .models import *
 from django.core.paginator import Paginator
 
@@ -158,6 +158,22 @@ def product_detail(request, slug):
     }
     return render(request, 'core/product_detail.html', context)
 
+
+from django.views.decorators.csrf import csrf_exempt
+import json
+@csrf_exempt
+def add_to_wishlist(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        product = Product.objects.get(id=product_id)
+
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user, product=product)
+        if created:
+            return JsonResponse({'message': 'Added to favorites!'})
+        else:
+            return JsonResponse({'message': 'Already in favorites.'})
+    return JsonResponse({'message': 'Unauthorized or bad request.'}, status=400)
 
 
 

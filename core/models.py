@@ -46,6 +46,7 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)
     is_available = models.BooleanField(default=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='unisex', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -73,3 +74,22 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.product.name}"
+    
+from django.conf import settings
+class Wishlist(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlists'
+    )
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='wishlisted_by'
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'product') # prevents duplicate 
+        ordering = ['-added_at'] # latest first
+
+    def __str__(self):
+        return f"{self.user.username}'s wishlist item:- {self.product.name}"
+
+
