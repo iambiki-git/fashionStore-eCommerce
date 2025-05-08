@@ -101,6 +101,11 @@ def products(request, category):
     # Fetch products based on category and subcategory
     products = Product.objects.all() # Default, show all products
 
+    
+    # Get IDs of products in user's favorites
+    favorite_products = Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+
+
     if category:
         try:
             category = Category.objects.get(slug=category)
@@ -132,7 +137,9 @@ def products(request, category):
         # 'products': products,
         'page_obj': page_obj,
         'categories': categories,
-        'subcategories': subcategories
+        'subcategories': subcategories,
+        'favorite_ids': list(favorite_products)
+
     }
 
     return render(request, 'core/products.html', context)
@@ -188,14 +195,83 @@ def wishlist(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    return render(request, 'core/wishlist.html')
+    # Get the user's wishlist items
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
+    
+    context = {
+        'wishlist_items': wishlist_items,
+    }
+    
+    return render(request, 'core/wishlist.html', context)
+
+
+# In your Django view:
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+
+@require_POST
+@csrf_exempt  # Temporarily for testing, remove in production
+def remove_wishlist_item(request, item_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Not authenticated'}, status=401)
+
+    try:
+        item = Wishlist.objects.get(id=item_id, user=request.user)
+        item.delete()
+        return JsonResponse({'status': 'success'}, status=200)
+    except Wishlist.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Item not found'}, status=404)
+
 
 
 def cart(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    return render(request, 'core/cart.html')
+    cart_items = Cart.objects.filter(user=request.user)
+    context = {
+        'cart_items':cart_items,
+    }
+    return render(request, 'core/cart.html', context)
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from .models import Cart, Product
+import json
+
+@csrf_exempt  # You can remove this if you include CSRF token in your template properly
+@login_required  # Ensure the user is logged in before they can add items to the cart
+def add_to_cart(request):
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            product_id = int(json.loads(data)['product_id'])
+            product = Product.objects.get(id=product_id)
+
+            # Check if the product is already in the user's cart
+            cart_item = Cart.objects.filter(user=request.user, product=product).first()
+
+            if cart_item:
+                # If the item exists, update the quantity
+                cart_item.quantity += 1
+                cart_item.save()
+                return JsonResponse({'message': f'{product.name} quantity updated in your cart.'}, status=200)
+            else:
+                # If the item doesn't exist in the cart, create a new cart item
+                Cart.objects.create(user=request.user, product=product, quantity=1)
+                return JsonResponse({'message': f'{product.name} added to your cart.'}, status=200)
+
+        except Product.DoesNotExist:
+            return JsonResponse({'error': 'Product not found.'}, status=400)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=405)
+
 
 def checkout(request):
     if not request.user.is_authenticated:

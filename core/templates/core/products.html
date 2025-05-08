@@ -247,43 +247,33 @@
                         <img src="{{ product.image.url }}" 
                              alt="{{ product.name }}" width="200" class="w-full h-80 object-cover transition duration-500 group-hover:scale-105">
                         
-                             <div class="absolute top-4 right-4 flex flex-col space-y-2">
-                                <!-- Heart Button (Tooltip shows ONLY on button hover) -->
-                                {% comment %} <button class="relative w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-700 hover:text-primary shadow-md transition hover-tooltip">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                    <!-- Tooltip with arrow -->
-                                    <span class="tooltip absolute right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 transition-opacity">
-                                        Add to favorites
-                                        <span class="absolute left-full top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45 transform -ml-1"></span>
-                                    </span>
-                                </button> {% endcomment %}
+                             <div class="absolute top-4 right-4 flex flex-col space-y-2">                                
                               <!-- Wishlist Button -->
                               <button 
                               data-product-id="{{ product.id }}"
                               class="wishlist-btn relative group w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:text-primary transition-all duration-200 hover-tooltip"
                               aria-label="Add to favorites"
+                              onclick="updateWishlistCount()"
                           >
+                            {% if product.id in favorite_ids %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke="red" />
+                            </svg>
+                              {% else %}
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                              </svg>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            {% endif %}
                           
                               <!-- Tooltip -->
-                              {% comment %} <span class="absolute right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap 
-                                  opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                  Add to favorites
-                                  <span class="absolute left-full top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45 transform -ml-1"></span>
-                              </span> {% endcomment %}
                               <span class="tooltip absolute right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 transition-opacity">
                                 Add to favorites
                                 <span class="absolute left-full top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45 transform -ml-1"></span>
                             </span>
-                          </button>
+                          </button> 
                           
-                        <!-- Simple Toast -->
-                        <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded shadow-lg opacity-0 transition-opacity duration-300"></div>
-
+                          
+                       
                             
                                 <!-- View Details Link (Tooltip shows ONLY on link hover) -->
                                 <a href="{% url 'product_detail' product.slug %}" class="relative w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-700 hover:text-blue-500 shadow-md transition hover-tooltip">
@@ -303,7 +293,9 @@
                             <span class="badge-new text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                         </div>
                         {% endif %}
+                        
                     </div>
+                    
                     <div class="p-5">
                         <div class="flex justify-between items-start mb-2">
                             <div>
@@ -311,10 +303,11 @@
                                 <p class="text-gray-500 text-sm">{{ product.brand }}</p>
                             </div>
                             
-                            <button class="relative group">
+
+                            <button class="relative"  data-product-id="{{ product.id }}" >
                                 {% if product.stock > 0 %}
                                 <!-- Cart Icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" data-product-id="{{ product.id }}" class="group add-to-cart-btn h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
                                 {% else %}
@@ -335,7 +328,8 @@
                                     </svg>
                                   </div>
                                 </div>
-                              </button>
+                            </button>
+                            
                         </div>
                         <div class="flex items-center mb-3">
                             <div class="flex text-yellow-400">
@@ -375,6 +369,10 @@
                 {% endif %}
                 
             </div>
+
+            <!-- Toast Notification for Favorites -->
+            <div id="toast" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-md opacity-0 transition-opacity duration-300"></div>
+            
         </div>
     </div>
 </div>
@@ -402,6 +400,7 @@
 </div>
        
 <script>
+
     document.querySelectorAll('.wishlist-btn').forEach(button => {
         button.addEventListener('click', async function() {
             const icon = this.querySelector('svg');
@@ -420,8 +419,10 @@
                 const data = await response.json();
                 showToast(response.ok ? data.message || 'Added to favorites!' : data.error || 'Error');
                 
+                
                 if (response.ok) {
                     icon.classList.replace('fill-none', 'fill-primary');
+                    
                 }
             } catch (error) {
                 showToast('Failed to add to favorites');
@@ -429,17 +430,51 @@
                 setTimeout(() => icon.classList.remove('animate-ping'), 1000);
             }
         });
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 1000);
+        }
     });
+
     
-    function showToast(message) {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.classList.remove('opacity-0');
+
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', async function () {
+                const productId = this.dataset.productId;
+                
+                try {
+                    const response = await fetch(`/cart/add/ajax/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                        body: JSON.stringify({ product_id: productId }),
+                    });
         
-        setTimeout(() => {
-            toast.classList.add('opacity-0');
-        }, 3000);
-    }
+                    const data = await response.json();
+        
+                    if (response.ok) {
+                        alert(data.message); // Replace with toast/snackbar if needed
+                        // Optionally update cart count in navbar here
+                    } else {
+                        alert(data.error);
+                    }
+                } catch (err) {
+                    alert("Failed to add to cart.");
+                }
+            });
+        });
+        
+        
+
+    
 </script>
     
 

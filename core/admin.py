@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, SubCategory, Product, ProductPrice, ProductImage, Wishlist
+from .models import Category, SubCategory, Product, ProductPrice, ProductImage, Wishlist, Cart
 
 
 # Inline for product price
@@ -37,10 +37,20 @@ class SubCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Wishlist)
 class WishlistAdmin(admin.ModelAdmin):
-    list_display = ('user', 'product', 'added_at')
+    list_display = ('id', 'user', 'product', 'added_at')
     list_filter = ('added_at',)
     search_fields = ('user__username', 'product__name')
     ordering = ('-added_at',)
+
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'quantity', 'size', 'brand', 'added_on')
+    search_fields = ('user__username', 'product__name')
+    list_filter = ('added_on', 'user')
+
+
 
 
 # Optional: register ProductPrice and ProductImage separately if needed

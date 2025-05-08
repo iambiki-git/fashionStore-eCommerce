@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ruz45#!)j8*$27vmts)0#$w=#qzm!h37#ta7%63*s&w1#h!b$l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -68,6 +68,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'core.context_processors.wishlist_count',  # Custom context processor for wishlist count
+                'core.context_processors.cart_item_count',
+            
+
             ],
         },
     },

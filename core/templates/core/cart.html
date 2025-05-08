@@ -94,6 +94,7 @@
                 </a>
             </div>
 
+            
             <!-- Cart Content -->
             <div class="flex flex-col lg:flex-row gap-8">
                 <!-- Cart Items -->
@@ -110,12 +111,14 @@
 
                     <!-- Cart Items List -->
                     <div class="space-y-4">
+                        {% if cart_items %}
+                        {% for c_item in cart_items %}
                         <!-- Cart Item 1 -->
                         <div class="cart-item bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 animate-slide-in">
                             <div class="flex flex-col sm:flex-row">
                                 <div class="sm:w-1/3 relative">
-                                    <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-                                         alt="Smart Watch" class="w-full h-48 sm:h-full object-cover">
+                                    <img src="{{ c_item.product.image.url }}" 
+                                         alt="{{ c_item.product.name }}" class="w-full h-48 sm:h-full object-cover">
                                     <button class="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow hover:bg-white transition">
                                         <i class="fas fa-times text-gray-600 hover:text-red-500"></i>
                                     </button>
@@ -123,33 +126,38 @@
                                 <div class="sm:w-2/3 p-4 sm:p-6 flex flex-col">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <h3 class="font-semibold text-lg mb-1">Smart Watch Series 5</h3>
-                                            <p class="text-gray-500 text-sm mb-3">Color: Black | Size: 42mm</p>
+                                            <h3 class="font-semibold text-lg mb-1">{{ c_item.product.name }}</h3>
+                                            <p class="text-gray-500 text-sm mb-3">Color: Blue | Size: Medium</p>
                                             <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mb-3">In Stock</span>
                                         </div>
-                                        <span class="font-bold text-lg text-gray-800">$299.00</span>
+                                        <span class="font-bold text-lg text-gray-800">Rs {{ c_item.product.price.new_price }}</span>
                                     </div>
                                     
                                     <div class="mt-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                        <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                                            <button class="quantity-btn bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-2">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <input type="number" value="1" min="1" class="w-12 text-center border-0 focus:ring-0">
-                                            <button class="quantity-btn bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-2">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
+                                        <div class="mt-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                            <div class="flex items-center gap-4">
+                                                <div class="border border-gray-200 rounded-lg px-4 py-2">
+                                                    <span class="font-medium">Qty: {{ c_item.quantity }}</span>
+                                                </div>
+                                                <a href="{% url 'product_detail' c_item.product.slug %}" 
+                                                   class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+                                                    <i class="fas fa-pencil-alt text-sm"></i> Edit
+                                                </a>
+                                            </div>
                                         </div>
+                                 
                                         <div class="text-right">
-                                            <p class="text-gray-500 text-sm">Subtotal: <span class="font-medium text-gray-800">$299.00</span></p>
-                                            <p class="text-green-600 text-sm mt-1"><i class="fas fa-shipping-fast mr-1"></i> Eligible for free shipping</p>
+                                            <p class="text-gray-500 text-sm">Subtotal: <span class="font-medium text-gray-800">$89.99</span></p>
+                                            <p class="text-green-600 text-sm mt-1"><i class="fas fa-shipping-fast mr-1"></i> Free shipping on orders over $50</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {% endfor %}
+                        {% endif %}
 
-                        <!-- Cart Item 2 -->
+                        {% comment %} <!-- Cart Item 2 -->
                         <div class="cart-item bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 animate-slide-in" style="animation-delay: 0.1s;">
                             <div class="flex flex-col sm:flex-row">
                                 <div class="sm:w-1/3 relative">
@@ -186,7 +194,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
 
                         <!-- Coupon Code -->
                         <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">

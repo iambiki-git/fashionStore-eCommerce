@@ -94,203 +94,146 @@
                     </div>
                 </div>
             </div>
+            
 
             <!-- Wishlist Items -->
+            {% if wishlist_items %}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Item 1 -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-300">
+                <!-- Items -->
+                {% for item in wishlist_items %}
+                <div class="wishlist-item bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-300"
+                     data-item-id="{{ item.id }}">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-                             alt="Smart Watch" class="w-full h-48 object-cover">
+                        <img src="{{ item.product.image.url }}" 
+                             alt="{{ item.product.name }}" class="w-full h-64 object-cover">
+                        
+                        <!-- Remove Button -->
                         <div class="absolute top-3 right-3">
-                            <button class="p-2 bg-white rounded-full shadow hover:bg-gray-100 transition">
-                                <i class="fas fa-heart text-red-500"></i>
+                            <button class="remove-favorite-btn p-2 bg-white rounded-full shadow hover:bg-gray-100 transition relative group"
+                                    aria-label="Remove from favorites">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke="red" />
+                                </svg>
+                                <!-- Tooltip -->
+                                <span class="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black text-white text-xs rounded py-1 px-2 top-full right-0 mt-2 whitespace-nowrap">
+                                    Remove from favorites
+                                </span>
+                                <!-- Loading spinner (hidden by default) -->
+                                <span class="remove-loading absolute inset-0 flex items-center justify-center hidden">
+                                    <svg class="animate-spin h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </span>
                             </button>
                         </div>
-                        <div class="absolute bottom-3 left-3 bg-indigo-600 text-white text-xs px-2 py-1 rounded">
-                            Priority
+            
+                        <div class="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                            SALE
                         </div>
                     </div>
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="font-semibold text-lg mb-1">Smart Watch Series 5</h3>
-                                <p class="text-gray-500 text-sm">Electronics</p>
+                                <h3 class="font-semibold text-lg mb-1">{{ item.product.name }}</h3>
+                                <p class="text-gray-500 text-sm">{{ item.product.brand }}</p>
                             </div>
-                            <span class="font-bold text-indigo-600">$299</span>
+                            <div class="text-right">
+                                <span class="font-bold text-red-500">Rs.{{ item.product.price.new_price }}</span>
+                                <span class="block text-xs text-gray-400 line-through">Rs.{{ item.product.price.old_price }}</span>
+                            </div>
                         </div>
                         <div class="mt-4 flex items-center justify-between">
-                            <span class="text-sm text-gray-400">Added 2 days ago</span>
-                            <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
+                            <span class="text-sm text-gray-400">Added {{ item.added_at|timesince }} ago</span>
+                            <a href="{% url 'product_detail' item.product.slug %}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
                                 View Details
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
-
-                <!-- Item 2 -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-300">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-                             alt="Running Shoes" class="w-full h-48 object-cover">
-                        <div class="absolute top-3 right-3">
-                            <button class="p-2 bg-white rounded-full shadow hover:bg-gray-100 transition">
-                                <i class="fas fa-heart text-red-500"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-lg mb-1">Pro Running Shoes</h3>
-                                <p class="text-gray-500 text-sm">Fashion</p>
-                            </div>
-                            <span class="font-bold text-indigo-600">$129</span>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-sm text-gray-400">Added 1 week ago</span>
-                            <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 3 -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-300">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-                             alt="Wireless Headphones" class="w-full h-48 object-cover">
-                        <div class="absolute top-3 right-3">
-                            <button class="p-2 bg-white rounded-full shadow hover:bg-gray-100 transition">
-                                <i class="fas fa-heart text-red-500"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-lg mb-1">Wireless Headphones</h3>
-                                <p class="text-gray-500 text-sm">Electronics</p>
-                            </div>
-                            <span class="font-bold text-indigo-600">$179</span>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-sm text-gray-400">Added 3 weeks ago</span>
-                            <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 4 -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-300">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-                             alt="Perfume" class="w-full h-48 object-cover">
-                        <div class="absolute top-3 right-3">
-                            <button class="p-2 bg-white rounded-full shadow hover:bg-gray-100 transition">
-                                <i class="fas fa-heart text-red-500"></i>
-                            </button>
-                        </div>
-                        <div class="absolute bottom-3 left-3 bg-green-600 text-white text-xs px-2 py-1 rounded">
-                            Fulfilled
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-lg mb-1">Luxury Perfume</h3>
-                                <p class="text-gray-500 text-sm">Beauty</p>
-                            </div>
-                            <span class="font-bold text-indigo-600">$89</span>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-sm text-gray-400">Added 1 month ago</span>
-                            <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 5 -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-300">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-                             alt="Camera" class="w-full h-48 object-cover">
-                        <div class="absolute top-3 right-3">
-                            <button class="p-2 bg-white rounded-full shadow hover:bg-gray-100 transition">
-                                <i class="fas fa-heart text-red-500"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-lg mb-1">Professional Camera</h3>
-                                <p class="text-gray-500 text-sm">Electronics</p>
-                            </div>
-                            <span class="font-bold text-indigo-600">$1,299</span>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-sm text-gray-400">Added 2 months ago</span>
-                            <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 6 -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-300">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-                             alt="Coffee Maker" class="w-full h-48 object-cover">
-                        <div class="absolute top-3 right-3">
-                            <button class="p-2 bg-white rounded-full shadow hover:bg-gray-100 transition">
-                                <i class="fas fa-heart text-red-500"></i>
-                            </button>
-                        </div>
-                        <div class="absolute bottom-3 left-3 bg-indigo-600 text-white text-xs px-2 py-1 rounded">
-                            Priority
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-lg mb-1">Premium Coffee Maker</h3>
-                                <p class="text-gray-500 text-sm">Home</p>
-                            </div>
-                            <span class="font-bold text-indigo-600">$249</span>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-sm text-gray-400">Added 3 days ago</span>
-                            <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
-
-            <!-- Pagination -->
-            <div class="mt-12 flex justify-center">
-                <nav class="flex items-center space-x-2">
-                    <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="px-3 py-1 rounded-md border border-indigo-500 bg-indigo-50 text-indigo-600 font-medium">1</button>
-                    <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">2</button>
-                    <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">3</button>
-                    <span class="px-2 text-gray-500">...</span>
-                    <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">8</button>
-                    <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </nav>
+            {% else %}
+            <!-- No items message -->
+            <div class="flex flex-col items-center justify-center py-20 text-center text-gray-500 space-y-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 010 6.364L12 20.364l7.682-7.682a4.5 4.5 0 10-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <p class="text-xl font-semibold">Your wishlist is empty</p>
+                <p class="text-sm text-gray-400">Browse items and tap the heart to add them here.</p>
+                <a href="/" class="mt-4 px-6 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition">
+                    Continue Shopping
+                </a>
             </div>
-        </main>
+            {% endif %}
+                    </main>
     </div>
+
+    <script>
+        document.querySelectorAll('.remove-favorite-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const item = this.closest('.wishlist-item');
+                const itemId = item.dataset.itemId;
+                const button = this;
+        
+                // Show loading state
+                button.querySelector('svg').classList.add('hidden');
+                button.querySelector('.remove-loading').classList.remove('hidden');
+                button.disabled = true;
+                
+                try {
+                    // Make API call to remove from favorites
+                    const response = await fetch(`/wishlist/remove/${itemId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        credentials: 'include'
+                    });
+                    
+                    if (response.status === 204 || response.status === 200) {
+                        // Success - animate removal
+                        item.style.transition = 'opacity 0.3s, transform 0.3s';
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateX(100px)';
+                        
+                        setTimeout(() => {
+                            item.remove();
+                            showNotification('Item removed from favorites', 'green');
+                            //window.location.reload();
+                        }, 300);
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Failed to remove item');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification(error.message || 'Failed to remove item', 'red');
+                    
+                    // Reset button state
+                    button.querySelector('svg').classList.remove('hidden');
+                    button.querySelector('.remove-loading').classList.add('hidden');
+                    button.disabled = false;
+                }
+            });
+        });
+        
+        // Helper functions
+        function getCSRFToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue;
+        }
+        
+        function showNotification(message, color) {
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-4 right-4 bg-${color}-500 text-white px-4 py-2 rounded shadow-lg`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+    </script>
 {% endblock %}  
