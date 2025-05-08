@@ -47,7 +47,10 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)
     is_available = models.BooleanField(default=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='unisex', blank=True, null=True)
+    available_colors = models.JSONField(default=list)  # Stores colors as a list
+    available_sizes = models.JSONField(default=list) 
     created_at = models.DateTimeField(auto_now_add=True)
+
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -63,7 +66,6 @@ class ProductPrice(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='price')
     old_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     new_price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return f"{self.product.name} - {self.new_price}"
@@ -100,7 +102,18 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     size = models.CharField(max_length=10, blank=True, null=True)
     brand = models.CharField(max_length=100, blank=True, null=True)
+    total_price = models.DecimalField(
+            max_digits=10,      # Total number of digits, including decimal part
+            decimal_places=2,   # Number of digits after the decimal point
+            default=0.00,       # Default value for the field
+            null=True,          # Allow null value if no price is set
+            blank=True          # Allow blank field in forms
+        )
     added_on = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'product', 'size')  # Prevents duplicates
+
     def __str__(self):
-        return f"{self.user.username} - {self.product.name} ({self.quantity})"
+        size_display = f"(Size: {self.size})" if self.size else ""
+        return f"{self.quantity}x {self.product.name} {size_display}"

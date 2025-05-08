@@ -71,6 +71,7 @@ TEMPLATES = [
 
                 'core.context_processors.wishlist_count',  # Custom context processor for wishlist count
                 'core.context_processors.cart_item_count',
+                'core.context_processors.cart_totals',
             
 
             ],

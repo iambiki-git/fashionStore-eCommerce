@@ -152,6 +152,7 @@ def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)  # Get product by slug
     product_price = product.price  # Assuming you have a related name 'price' in ProductPrice model
     product_images = product.images.all()  # Assuming you have a related name 'images' in ProductImage model
+    preselected_size = request.GET.get('size', '')  # Default to empty string if not provided
 
     today = date.today()
     estimated_delivery = today + timedelta(days=3)  # You can change 3 to any number of days
@@ -161,6 +162,8 @@ def product_detail(request, slug):
         'product_price': product_price,
         'product_images': product_images,
         'estimated_delivery': estimated_delivery.strftime('%a, %b %d'),
+        'preselected_size': preselected_size,
+
 
     }
     return render(request, 'core/product_detail.html', context)
@@ -230,47 +233,162 @@ def cart(request):
         return redirect('login')
     
     cart_items = Cart.objects.filter(user=request.user)
+
     context = {
         'cart_items':cart_items,
+
     }
     return render(request, 'core/cart.html', context)
 
 
+
+def delete_cart_item(request, item_id):
+    # Ensure that the user is logged in (optional check)
+    if request.user.is_authenticated:
+        user = request.user  # Get the logged-in user
+
+        try:
+            # Fetch the cart item to be deleted for the logged-in user
+            cart_item = Cart.objects.get(user=user, id=item_id)
+            
+            # Delete the cart item
+            cart_item.delete()
+
+            # Show a success message
+            messages.success(request, 'Item deleted successfully!')
+        except Cart.DoesNotExist:
+            # Show an error message if the item doesn't exist
+            messages.error(request, 'Item not found in your cart.')
+
+    else:
+        # Redirect to login page if the user is not authenticated
+        messages.error(request, 'You need to be logged in to delete items from your cart.')
+        return redirect('login')  # Replace with your login page view
+
+    # After deleting, redirect the user back to the cart page
+    return redirect('cart')  # Replace with your cart page URL name
+
+
+
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.db.models import F
+import json
+from .models import Cart, Product
+
+@require_POST
+@login_required
+def add_to_cart(request):
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        product_id = data.get('product_id')
+        size = data.get('size', 'M')  # Default empty string
+        quantity = int(data.get('quantity', 1))  # Default 1
+
+        if not product_id:
+            return JsonResponse(
+                {'success': False, 'message': 'Product ID is required'},
+                status=400
+            )
+
+        try:
+            product = Product.objects.get(pk=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse(
+                {'success': False, 'message': 'Product not found'},
+                status=404
+            )
+
+        # Check for existing cart items with same product and size
+        existing_item = Cart.objects.filter(
+            user=request.user,
+            product=product,
+            size=size
+        ).first()
+
+        if existing_item:
+            # Update quantity if item exists
+            existing_item.quantity = quantity
+            existing_item.size = size
+            existing_item.total_price=quantity*product.price.new_price
+            existing_item.save()
+            existing_item.refresh_from_db()
+            cart_item = existing_item
+
+            action = 'updated'
+        else:
+            # Create new item if doesn't exist
+            cart_item = Cart.objects.create(
+                user=request.user,
+                product=product,
+                size=size,
+                quantity=quantity,
+                total_price=quantity*product.price.new_price
+            )
+            action = 'added'
+
+        cart_count = Cart.objects.filter(user=request.user).count()
+
+        return JsonResponse({
+            'success': True,
+            'cart_count': cart_count,
+            'message': f'{action.capitalize()} {quantity} x {product.name} to cart (Size: {size if size else "N/A"})',
+            'new_quantity': cart_item.quantity,
+            'action': action
+        })
+
+    except ValueError:
+        return JsonResponse(
+            {'success': False, 'message': 'Invalid quantity'},
+            status=400
+        )
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {'success': False, 'message': 'Invalid JSON data'},
+            status=400
+        )
+    except Exception as e:
+        return JsonResponse(
+            {'success': False, 'message': str(e)},
+            status=500
+        )
+    
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from .models import Cart, Product
 import json
 
-@csrf_exempt  # You can remove this if you include CSRF token in your template properly
-@login_required  # Ensure the user is logged in before they can add items to the cart
-def add_to_cart(request):
-    if request.method == 'POST':
+@csrf_exempt
+def ajax_update_cart(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        cart_id = data.get("cart_id")
+        new_size = data.get("size")
+        new_color = data.get("color")
+
         try:
-            data = request.body.decode('utf-8')
-            product_id = int(json.loads(data)['product_id'])
-            product = Product.objects.get(id=product_id)
+            cart_item = Cart.objects.get(id=cart_id, user=request.user)
 
-            # Check if the product is already in the user's cart
-            cart_item = Cart.objects.filter(user=request.user, product=product).first()
+            # Prevent duplicates of same product + size + color
+            exists = Cart.objects.filter(
+                user=request.user,
+                product=cart_item.product,
+                size=new_size,
+                color=new_color
+            ).exclude(id=cart_id).exists()
 
-            if cart_item:
-                # If the item exists, update the quantity
-                cart_item.quantity += 1
-                cart_item.save()
-                return JsonResponse({'message': f'{product.name} quantity updated in your cart.'}, status=200)
-            else:
-                # If the item doesn't exist in the cart, create a new cart item
-                Cart.objects.create(user=request.user, product=product, quantity=1)
-                return JsonResponse({'message': f'{product.name} added to your cart.'}, status=200)
+            if exists:
+                return JsonResponse({"success": False, "message": "Same variation already exists in your cart."})
 
-        except Product.DoesNotExist:
-            return JsonResponse({'error': 'Product not found.'}, status=400)
+            cart_item.size = new_size
+            cart_item.color = new_color
+            cart_item.save()
+            return JsonResponse({"success": True})
+        except Cart.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Cart item not found."})
+    return JsonResponse({"success": False, "message": "Invalid request."})
 
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid request method.'}, status=405)
+
 
 
 def checkout(request):

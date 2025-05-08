@@ -46,7 +46,7 @@ class WishlistAdmin(admin.ModelAdmin):
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ('user', 'product', 'quantity', 'size', 'brand', 'added_on')
+    list_display = ('user', 'product', 'quantity', 'size', 'brand', 'total_price', 'added_on')
     search_fields = ('user__username', 'product__name')
     list_filter = ('added_on', 'user')
 
