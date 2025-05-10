@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, SubCategory, Product, ProductPrice, ProductImage, Wishlist, Cart
+from .models import Category, SubCategory, Product, ProductPrice, ProductImage, Wishlist, Cart, ShippingAddress
 
 
 # Inline for product price
@@ -51,6 +51,11 @@ class CartAdmin(admin.ModelAdmin):
     list_filter = ('added_on', 'user')
 
 
+@admin.register(ShippingAddress)
+class ShippingAddressAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'city', 'contact_number', 'email', 'payment_method', 'created_at')
+    search_fields = ('first_name', 'last_name', 'city', 'contact_number')
+    list_filter = ('city', 'province')
 
 
 # Optional: register ProductPrice and ProductImage separately if needed

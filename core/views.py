@@ -393,9 +393,48 @@ def ajax_update_cart(request):
 
 def checkout(request):
     if not request.user.is_authenticated:
-        return redirect('login') 
+        return redirect('login')
+
+    cart_items = Cart.objects.filter(user=request.user)
+
+    context = {
+        'cart_items':cart_items,
+    } 
     
-    return render(request, 'core/checkout.html')
+    return render(request, 'core/checkout.html', context)
+
+
+
+@csrf_exempt
+def store_shipping_info(request):
+    if request.method == "POST":
+        try:
+            # Parse the JSON data from the request
+            data = json.loads(request.body)
+            print(data)
+            
+            # Create a new ShippingInfo entry (adjust fields as necessary)
+            shipping_info = ShippingAddress.objects.create(
+                user=request.user,
+                email=data['email'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                address_line1=data['address_line1'],
+                address_line2=data['address_line2'],
+                city=data['city'],
+                province=data['province'],
+                contact_number=data['contact_number'],
+                payment_method=data['payment_method'],
+                delivery_instructions="test",
+            )
+            return JsonResponse({'success': True})
+        except Exception as e:
+            print("error", e)
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
+
+def confirm_order(request):
+    return render(request, 'core/confirm_order.html')
 
 def confirmation(request):
     if not request.user.is_authenticated:
