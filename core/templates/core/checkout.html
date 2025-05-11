@@ -148,6 +148,10 @@
                 </div>
             </div>
         </main>
+
+         <!-- Toast Notification for Favorites -->
+        <div id="toast" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-md opacity-0 transition-opacity duration-300"></div>
+         
     </div>
 
     <script>
@@ -170,7 +174,7 @@
           
               // Check if required fields are filled
               if (!email || !firstName || !lastName || !address_line1 || !city || !province || !contactNumber || !paymentMethod) {
-                alert("Please fill in all the required fields.");
+                showToast("Please fill in all the required fields.");
                 return;
                 }
               

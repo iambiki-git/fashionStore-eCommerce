@@ -434,7 +434,16 @@ def store_shipping_info(request):
     return JsonResponse({'success': False})
 
 def confirm_order(request):
-    return render(request, 'core/confirm_order.html')
+    cart_items = Cart.objects.filter(user=request.user)
+    shipping_address = ShippingAddress.objects.filter(user=request.user)
+
+
+    context = {
+        'cart_items':cart_items,
+        'shipping_address':shipping_address,
+    }
+
+    return render(request, 'core/confirm_order.html', context)
 
 def confirmation(request):
     if not request.user.is_authenticated:
