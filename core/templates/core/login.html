@@ -40,7 +40,7 @@
                     </div> {% endcomment %}
 
                     <!-- Toast Notification -->
-                    <div id="toastMessage" class="fixed top-20 right-[580px] z-50 hidden px-4 py-2 rounded shadow-lg text-white text-sm" role="alert"></div>
+                    {% comment %} <div id="toastMessage" class="fixed top-20 right-[580px] z-50 hidden px-4 py-2 rounded shadow-lg text-white text-sm" role="alert"></div> {% endcomment %}
 
                     <!-- Login Form -->
                     <form class="space-y-4" method="POST" id="loginForm">
@@ -134,7 +134,7 @@
         });
 
         // Toast Notification Handling
-        document.addEventListener('DOMContentLoaded', () => {
+        {% comment %} document.addEventListener('DOMContentLoaded', () => {
             const toast = document.getElementById('toastMessage');
             {% if messages %}
                 {% for message in messages %}
@@ -156,7 +156,7 @@
                     }, 4000);
                 {% endfor %}
             {% endif %}
-        });
+        }); {% endcomment %}
     </script>
 
 {% endblock %}

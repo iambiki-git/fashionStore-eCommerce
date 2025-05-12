@@ -47,6 +47,8 @@
                     Your Order
                 </h2>
                 
+                <form method="POST">
+                    {% csrf_token %}
                 <!-- Order Items -->
                 <div class="space-y-4 mb-6">
                     {% for item in cart_items %}
@@ -96,6 +98,7 @@
                     </svg>
                     Delivery Information
                 </h2>
+                
                 {% for address in shipping_address %}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -196,11 +199,11 @@
                     </div>
                 </div>
                 
-                <a href="/confirmation" 
+                <button type="submit" 
                 class="w-full mt-6 bg-primary hover:from-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.01] shadow-md hover:shadow-lg block text-center">
                     Confirm & Pay
-                </a>
-
+                </button>
+            </form>
                 
                 <p class="text-xs text-center text-gray-500 mt-3">
                     By confirming, you agree to our <a href="#" class="text-purple-600 hover:underline">Terms</a> and <a href="#" class="text-purple-600 hover:underline">Privacy Policy</a>

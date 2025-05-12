@@ -73,7 +73,7 @@ def login_view(request):
                 else:
                     request.session.set_expiry(0)  # Browser close
 
-                messages.success(request, "Welcome back! You are now logged in.")    
+                #messages.success(request, "Welcome back! You are now logged in.")    
                 return redirect('index')
             else:
                 messages.error(request, "Incorrect password")
@@ -448,5 +448,8 @@ def confirm_order(request):
 def confirmation(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    # if request.method == "POST":
+
     
     return render(request, 'core/confirmation.html')    

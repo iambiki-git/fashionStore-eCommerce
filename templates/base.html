@@ -9,9 +9,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+    
+
 
 </head>
 <body class="bg-light">
+
     <!-- Navbar -->
     {% include 'navbar.html' %}
     {% block content %}base file{% endblock %}
@@ -22,9 +25,19 @@
 
     
 
-    
+    <!-- Toast Notification for Favorites -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-md opacity-0 transition-opacity duration-300"></div>
+
 
 
     <script src="{% static 'js/scripts.js' %}"></script>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                showToast("{{ message|escapejs }}", "{{ message.tags }}");
+            {% endfor %}
+        {% endif %}
+    </script>
+
 </body>
 </html>

@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.conf import settings
+
 
 
 
@@ -136,4 +138,41 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.city}"
+
+
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('PROCESSING', 'Processing'),
+        ('SHIPPED', 'Shipped'),
+        ('DELIVERED', 'Delivered'),
+        ('CANCELLED', 'Cancelled'),
+    ] 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    order_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    shipping_address = models.ForeignKey('ShippingAddress', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"Order #{self.id} by {self.user.username}"
+
+    def total_amount(self):
+        return sum(item.total_price() for item in self.ordered_items.all())
+    
+
+class OrderedItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="ordered_items")
+    product = models.ForeignKey('Product', on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(default=1)
+    size = models.CharField(max_length=10, blank=True, null=True)
+    brand = models.CharField(max_length=50, blank=True, null=True)
+    color = models.CharField(max_length=20, blank=True, null=True)
+    price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2) #Prices of products can change over time, but you need to freeze the price at checkout.
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} (Order #{self.order.id})"
+
+    def total_price(self):
+        return self.quantity * self.price_at_purchase
 
