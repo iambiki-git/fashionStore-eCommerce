@@ -392,7 +392,7 @@
         </div>
     </main>
      <!-- Toast Notification for Favorites -->
-     <div id="toast" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-md opacity-0 transition-opacity duration-300"></div>
+     {% comment %} <div id="toast" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-md opacity-0 transition-opacity duration-300"></div> {% endcomment %}
             
 
 </div>     
@@ -538,16 +538,6 @@
             });
         }
     });
-
-    function showToast(message) {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.classList.remove('opacity-0');
-        
-        setTimeout(() => {
-            toast.classList.add('opacity-0');
-        }, 1000);
-    }
 </script>
                                     
 {% endblock %}

@@ -73,7 +73,7 @@ def login_view(request):
                 else:
                     request.session.set_expiry(0)  # Browser close
 
-                messages.success(request, "Welcome back! You are now logged in.")    
+                #messages.success(request, "Welcome back! You are now logged in.")    
                 return redirect('index')
             else:
                 messages.error(request, "Incorrect password")
@@ -354,6 +354,7 @@ def add_to_cart(request):
             status=500
         )
     
+    
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -389,16 +390,110 @@ def ajax_update_cart(request):
     return JsonResponse({"success": False, "message": "Invalid request."})
 
 
-
-
 def checkout(request):
     if not request.user.is_authenticated:
-        return redirect('login') 
+        return redirect('login')
+
+    cart_items = Cart.objects.filter(user=request.user)
+
+    context = {
+        'cart_items':cart_items,
+    } 
     
-    return render(request, 'core/checkout.html')
+    return render(request, 'core/checkout.html', context)
+
+
+
+@csrf_exempt
+def store_shipping_info(request):
+    if request.method == "POST":
+        try:
+            # Parse the JSON data from the request
+            data = json.loads(request.body)
+            
+            
+            # Create a new ShippingInfo entry (adjust fields as necessary)
+            shipping_info = ShippingAddress.objects.create(
+                user=request.user,
+                email=data['email'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                address_line1=data['address_line1'],
+                address_line2=data['address_line2'],
+                city=data['city'],
+                province=data['province'],
+                contact_number=data['contact_number'],
+                payment_method=data['payment_method'],
+                delivery_instructions="test",
+            )
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
+
+
+from django.utils import timezone
+def confirm_order(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    shipping_address = ShippingAddress.objects.filter(user=request.user).last()
+    
+
+    if request.method == "POST":
+        if not shipping_address:
+            return redirect('shipping_address_form')  # handle missing address
+    
+        if not cart_items.exists():
+            return redirect('cart')  # or handle empty cart gracefully
+        
+        # Step 1: Create an Order
+        order = Order.objects.create(
+            user=request.user,
+            order_date=timezone.now(),
+            status='PENDING',
+            shipping_address=shipping_address
+        )
+
+         # Step 2: Create OrderedItems
+        for cart_item in cart_items:
+            OrderedItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                size=cart_item.size,
+                brand=cart_item.brand,
+                color="white",
+                price_at_purchase=cart_item.product.price.new_price  # or cart_item.product.get_price()
+            )
+
+        # Step 3: Clear the cart
+        cart_items.delete()
+
+        # Step 4: Redirect to order confirmation page
+        return redirect('confirmation')
+
+
+    context = {
+        'cart_items':cart_items,
+        'shipping_address':shipping_address,
+    }
+
+    return render(request, 'core/confirm_order.html', context)
 
 def confirmation(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    return render(request, 'core/confirmation.html')    
+    order = Order.objects.filter(user=request.user).last()
+    shippingAddress = ShippingAddress.objects.filter(user=request.user).last()
+    
+    
+   
+    
+
+    context = {
+        'order':order,
+        'shippingAddress':shippingAddress,
+    }
+
+    
+    return render(request, 'core/confirmation.html', context)    
