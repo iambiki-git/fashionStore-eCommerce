@@ -34,7 +34,7 @@
                 </div>
 
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">Order Confirmed!</h2>
-                <p class="text-gray-600 mb-8">Your order #12345 has been placed successfully.</p>
+                <p class="text-gray-600 mb-8">Your order has been placed successfully.</p>
                 
                 <div class="bg-white rounded-lg shadow p-6 max-w-md mx-auto mb-8">
                     <h3 class="font-medium text-gray-900 mb-4">Order Details</h3>
@@ -45,26 +45,28 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Date</span>
-                            <span class="font-medium">June 15, 2023</span>
+                            <span class="font-medium">{{ order.order_date }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Total</span>
-                            <span class="font-medium">$65.50</span>
+                            <span class="font-medium">{{ order.total_amount }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Payment Method</span>
-                            <span class="font-medium">Visa •••• 4242</span>
+                            <span class="font-medium">{{ shippingAddress.payment_method }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-lg shadow p-6 max-w-md mx-auto mb-8 text-left">
                     <h3 class="font-medium text-gray-900 mb-4">Shipping Information</h3>
-                    <p class="text-gray-800 mb-1">John Doe</p>
-                    <p class="text-gray-600 mb-1">123 Main Street</p>
-                    <p class="text-gray-600 mb-1">Apartment 4B</p>
-                    <p class="text-gray-600">New York, NY 10001</p>
-                    <p class="text-gray-600 mt-3">+1 (555) 123-4567</p>
+                    <p class="text-gray-800 mb-1">{{ shippingAddress.first_name }} {{ shippingAddress.last_name}}</p>
+                    <p class="text-gray-600 mb-1">{{ shippingAddress.address_line1 }}</p>
+                    <p class="text-gray-600">{{ shippingAddress.address_line2 }}</p>
+                    <p class="text-gray-600">{{ shippingAddress.city }}</p>
+                    <p class="text-gray-600">{{ shippingAddress.province }}</p>
+                    <p class="text-gray-600">{{ shippingAddress.delivery_instructions }}</p>
+                    <p class="text-gray-600 mt-3">{{ shippingAddress.contact_number }}</p>
                 </div>
 
                 <div class="max-w-md mx-auto">

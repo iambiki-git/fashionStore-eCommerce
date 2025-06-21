@@ -99,33 +99,33 @@
                     Delivery Information
                 </h2>
                 
-                {% for address in shipping_address %}
+                {% comment %} {% for address in shipping_address %} {% endcomment %}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <h3 class="text-sm font-medium text-gray-500">Shipping Address</h3>
-                        <p class="mt-1 text-gray-900 uppercase">{{ address.first_name }} {{ address.last_name }}</p>
-                        <p class="text-gray-900">{{ address.address_line1 }}</p>
-                        <p class="text-gray-900">{{ address.address_line2 }}</p>
-                        <p class="text-gray-900">{{ address.city }}</p>
-                        <p class="text-gray-900">{{ address.province }}</p>
+                        <p class="mt-1 text-gray-900 uppercase">{{ shipping_address.first_name }} {{ shipping_address.last_name }}</p>
+                        <p class="text-gray-900">{{ shipping_address.address_line1 }}</p>
+                        <p class="text-gray-900">{{ shipping_address.address_line2 }}</p>
+                        <p class="text-gray-900">{{ shipping_address.city }}</p>
+                        <p class="text-gray-900">{{ shipping_address.province }}</p>
                     </div>
                     <div>
                         <h3 class="text-sm font-medium text-gray-500">Contact</h3>
-                        <p class="mt-1 text-gray-900">{{ address.email }}</p>
-                        <p class="text-gray-900">{{ address.contact_number }}</p>
+                        <p class="mt-1 text-gray-900">{{ shipping_address.email }}</p>
+                        <p class="text-gray-900">{{ shipping_address.contact_number }}</p>
                         
                         <h3 class="mt-4 text-sm font-medium text-gray-500">Payment Method</h3>
-                        <p class="text-sm text-blue-600">{{ address.payment_method }}</p>
+                        <p class="text-sm text-blue-600">{{ shipping_address.payment_method }}</p>
                         
                         <h3 class="mt-4 text-sm font-medium text-gray-500">Delivery Instruction</h3>
-                        <p class="text-sm text-blue-600">{{ address.delivery_instructions }}</p>
+                        <p class="text-sm text-blue-600">{{ shipping_address.delivery_instructions }}</p>
                         
                         {% comment %} <h3 class="mt-4 text-sm font-medium text-gray-500">Delivery Method</h3> {% endcomment %}
                         {% comment %} <p class="mt-1 text-gray-900">Standard Delivery</p> {% endcomment %}
                         <p class="text-sm text-blue-600">Estimated arrival: June 15-18</p>
                     </div>
                 </div>
-                {% endfor %}
+                {% comment %} {% endfor %} {% endcomment %}
             </div>
         </div>
         
@@ -144,13 +144,13 @@
                     <div class="bg-white p-2 rounded shadow-xs">
                         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" class="h-6" alt="Visa">
                     </div>
-                    {% for address in shipping_address %}
+                    {% comment %} {% for address in shipping_address %} {% endcomment %}
                     <div class="ml-3">
                         {% comment %} <p class="font-medium">Visa ending in 4242</p>
                         <p class="text-sm text-gray-600">Expires 05/2025</p> {% endcomment %}
-                        <p class="text-sm text-gray-600">{{ address.payment_method }}</p>
+                        <p class="text-sm text-gray-600">{{ shipping_address.payment_method }}</p>
                     </div>
-                    {% endfor %}
+                    {% comment %} {% endfor %} {% endcomment %}
                 </div>
             </div>
             

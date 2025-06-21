@@ -6,7 +6,7 @@
                 <!-- Checkout Form -->
                 <div class="md:w-2/3">
                     <div class="bg-white rounded-lg shadow p-6 mb-6">
-                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Contact information</h2>
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Contact information <span class="text-gray-400 text-sm">(Optional)</span></h2>
                         <input type="email" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg mb-4 input-focus">
                         <div class="flex items-center">
                             <input type="checkbox" id="newsletter" class="mr-2">
@@ -24,6 +24,7 @@
                             <input type="text" name="first_name" placeholder="First name" class="p-3 border border-gray-300 rounded-lg input-focus">
                             <input type="text" name="last_name" placeholder="Last name" class="p-3 border border-gray-300 rounded-lg input-focus">
                           </div>
+
                       
                           <!-- Address -->
                           <input type="text" name="address1" placeholder="Address" class="w-full p-3 border border-gray-300 rounded-lg mb-4 input-focus">
@@ -173,7 +174,7 @@
               
           
               // Check if required fields are filled
-              if (!email || !firstName || !lastName || !address_line1 || !city || !province || !contactNumber || !paymentMethod) {
+              if (!firstName || !lastName || !address_line1 || !city || !province || !contactNumber || !paymentMethod) {
                 showToast("Please fill in all the required fields.");
                 return;
                 }

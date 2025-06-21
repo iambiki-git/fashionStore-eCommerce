@@ -354,6 +354,7 @@ def add_to_cart(request):
             status=500
         )
     
+    
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -389,8 +390,6 @@ def ajax_update_cart(request):
     return JsonResponse({"success": False, "message": "Invalid request."})
 
 
-
-
 def checkout(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -411,7 +410,7 @@ def store_shipping_info(request):
         try:
             # Parse the JSON data from the request
             data = json.loads(request.body)
-            print(data)
+            
             
             # Create a new ShippingInfo entry (adjust fields as necessary)
             shipping_info = ShippingAddress.objects.create(
@@ -429,13 +428,48 @@ def store_shipping_info(request):
             )
             return JsonResponse({'success': True})
         except Exception as e:
-            print("error", e)
             return JsonResponse({'success': False})
     return JsonResponse({'success': False})
 
+
+from django.utils import timezone
 def confirm_order(request):
     cart_items = Cart.objects.filter(user=request.user)
-    shipping_address = ShippingAddress.objects.filter(user=request.user)
+    shipping_address = ShippingAddress.objects.filter(user=request.user).last()
+    
+
+    if request.method == "POST":
+        if not shipping_address:
+            return redirect('shipping_address_form')  # handle missing address
+    
+        if not cart_items.exists():
+            return redirect('cart')  # or handle empty cart gracefully
+        
+        # Step 1: Create an Order
+        order = Order.objects.create(
+            user=request.user,
+            order_date=timezone.now(),
+            status='PENDING',
+            shipping_address=shipping_address
+        )
+
+         # Step 2: Create OrderedItems
+        for cart_item in cart_items:
+            OrderedItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                size=cart_item.size,
+                brand=cart_item.brand,
+                color="white",
+                price_at_purchase=cart_item.product.price.new_price  # or cart_item.product.get_price()
+            )
+
+        # Step 3: Clear the cart
+        cart_items.delete()
+
+        # Step 4: Redirect to order confirmation page
+        return redirect('confirmation')
 
 
     context = {
@@ -449,7 +483,17 @@ def confirmation(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    # if request.method == "POST":
+    order = Order.objects.filter(user=request.user).last()
+    shippingAddress = ShippingAddress.objects.filter(user=request.user).last()
+    
+    
+   
+    
+
+    context = {
+        'order':order,
+        'shippingAddress':shippingAddress,
+    }
 
     
-    return render(request, 'core/confirmation.html')    
+    return render(request, 'core/confirmation.html', context)    
